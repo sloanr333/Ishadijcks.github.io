@@ -39,7 +39,7 @@ var initTypeEffectiveness = function(){
 	typeEffectiveness[NORMAL][ROCK] = getNotEffective(NORMAL);
 	typeEffectiveness[NORMAL][GHOST] = 0;
 	typeEffectiveness[NORMAL][STEEL] = getNotEffective(NORMAL);
-	
+
 	typeEffectiveness[FIRE][FIRE] = getNotEffective(FIRE);
 	typeEffectiveness[FIRE][WATER] = getNotEffective(FIRE);
 	typeEffectiveness[FIRE][GRASS] = getVeryEffective(FIRE);
@@ -265,7 +265,22 @@ var buyVeryUpgrade = function(type){
 		player.veryEffectiveTypeBonus[type]++;
 	} else {
 		$.notify("You don't have enough " + numberToType[type] + " shards", "error");
-	}	
+	}
+}
+
+var calculateTypedAttack = function(prmType){
+	var total = 0;
+	for (var i = 0; i<player.caughtPokemonList.length; i++){
+		for (var j = 0; j<player.caughtPokemonList[i].type.length; j++) {
+			console.log(player.caughtPokemonList[i].type);
+			if (typeToNumber(player.caughtPokemonList[i].type[j]) == prmType) {
+				var level = experienceToLevel(player.caughtPokemonList[i].experience,player.caughtPokemonList[i].levelType);
+				total += Math.ceil(level*(player.caughtPokemonList[i].attack)/100);
+				break;
+			}
+		}
+	}
+	return total;
 }
 
 var showShardModal = function(){
@@ -280,36 +295,36 @@ var showShardModal = function(){
 			html += "<div style='background-color:#" + typeColorUnlocked[i] + "' class='col-sm-1 shardUpgrade'></div>";
 		}
 		for(var j = player.notEffectiveTypeBonus[i]; j<10; j++){
-			html += "<div style='background-color:#" + typeColorLocked[i] + "' class='col-sm-1 shardUpgrade shardUpgradeLocked'></div>";	
+			html += "<div style='background-color:#" + typeColorLocked[i] + "' class='col-sm-1 shardUpgrade shardUpgradeLocked'></div>";
 		}
-		
-		html += "<td class='shardColumn4'>";
+
+		html += "</td><td class='shardColumn4'>";
 		if (player.notEffectiveTypeBonus[i] < 10){
 			html += "<button class='tooltipShard' title='" + numberWithCommas(250*(player.notEffectiveTypeBonus[i]+1)) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 1 +")'>Upgrade</button>";
 		} else {
 			html += "<button class='disabled'>Upgrade</button>";
 		}
 
-		html += "</td></td></tr>";
+		html += "</td></tr>";
 
 		html +="<tr><td><img class= shardImage' id='normalShard' src='images/shards/" + i + ".png'> " + numberWithCommas(player.typeShards[i]) + "</td>";
 		html +="<td>Normal:</td>";
 		html +="<td>"+getNormalEffective(i).toFixed(2)+"x</td>";
 		html +="<td style='width:50%'>";
 		for( var j = 0; j<player.normalEffectiveTypeBonus[i]; j++){
-			html += "<div <div style='background-color:#" + typeColorUnlocked[i] + "' class='col-sm-1 shardUpgrade'></div>";
+			html += "<div style='background-color:#" + typeColorUnlocked[i] + "' class='col-sm-1 shardUpgrade'></div>";
 		}
 		for(var j = player.normalEffectiveTypeBonus[i]; j<10; j++){
-			html += "<div <div style='background-color:#" + typeColorLocked[i] + "' class='col-sm-1 shardUpgrade shardUpgradeLocked'></div>";
+			html += "<div style='background-color:#" + typeColorLocked[i] + "' class='col-sm-1 shardUpgrade shardUpgradeLocked'></div>";
 		}
-		
-		html += "<td class='shardColumn4'>";
+
+		html += "</td><td class='shardColumn4'>";
 		if (player.normalEffectiveTypeBonus[i] < 10){
 			html += "<button class='tooltipShard' title='" + numberWithCommas(250*(player.normalEffectiveTypeBonus[i]+1)) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 2 +")'>Upgrade</button>";
 		} else {
 			html += "<button class='disabled'>Upgrade</button>";
 		}
-		html += "</td></td></tr>";
+		html += "</td></tr>";
 
 
 		html +="<tr><td></td>";
@@ -317,19 +332,19 @@ var showShardModal = function(){
 		html +="<td>"+getVeryEffective(i).toFixed(2)+"x</td>";
 		html +="<td style='width:50%'>";
 		for( var j = 0; j<player.veryEffectiveTypeBonus[i]; j++){
-			html += "<div <div style='background-color:#" + typeColorUnlocked[i] + "' class='col-sm-1 shardUpgrade'></div>";
+			html += "<div style='background-color:#" + typeColorUnlocked[i] + "' class='col-sm-1 shardUpgrade'></div>";
 		}
 		for(var j = player.veryEffectiveTypeBonus[i]; j<10; j++){
-			html += "<div <div style='background-color:#" + typeColorLocked[i] + "' class='col-sm-1 shardUpgrade shardUpgradeLocked'></div>";
+			html += "<div style='background-color:#" + typeColorLocked[i] + "' class='col-sm-1 shardUpgrade shardUpgradeLocked'></div>";
 		}
-		
-		html += "<td class='shardColumn4'>";
+
+		html += "</td><td class='shardColumn4'>";
 		if (player.veryEffectiveTypeBonus[i] < 10){
 			html += "<button class='tooltipShard' title='" + numberWithCommas(250*(player.veryEffectiveTypeBonus[i]+1)) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 3 +")'>Upgrade</button>";
 		} else {
 			html += "<button class='disabled'>Upgrade</button>";
 		}
-		html += "</td></td></tr>";
+		html += "</td></tr>";
 
 
 		html += "</table><br><br><br>";
