@@ -166,30 +166,7 @@ var createMap = function(size) {
     return map;
 }
 
-var adjacent = function(pos, target, size) {
-    if (target < 0 || target > (size*size) - 1) {
-        return false;
-    }
-    if (target == pos + size) {
-        return true;
-    }
-    if (target == pos - size) {
-        return true;
-    }
-    if (target == pos + 1) {
-        return !(target % (size) == 0)
-    }
-
-    if (target == pos - 1) {
-        return !(target % (size) == (size - 1))
-    }
-    return false;
-
-}
-
 var canMoveToRoom = function(target, size) {
-    console.log(playerPosition + " " + target);
-    console.log(target % (size));
     if (curEnemy.alive || !dungeonCanMove) {
         return false;
     }
@@ -210,11 +187,55 @@ var canMoveToRoom = function(target, size) {
     }
 }
 
+var floodVisit = function(startPos) {
+	var size = currentDungeon.size;
+	var Q = [];
+	var chk = [];
+	currentDungeon.mapVisited[startPos] = 1;
+	Q.push(startPos);
+	chk[startPos] = 1;
+	while (Q.length > 0) {
+		var n = Q.shift();
+		var nStep = n-1; //left
+		if (chk[nStep] != 1 && 
+			n % (size) != 0 && (nStep) >= 0 && 
+			currentDungeon.mapDiscovered[nStep] && currentDungeon.map[nStep] == "Empty") {
+				currentDungeon.mapVisited[nStep] = 1;
+				Q.push(nStep);
+				chk[nStep] = 1;
+		}
+		nStep = n+1; //right
+		if (chk[nStep] != 1 && 
+			n % (size) != (size-1) && (nStep) < (size*size) && 
+			currentDungeon.mapDiscovered[nStep] && currentDungeon.map[nStep] == "Empty") {
+				currentDungeon.mapVisited[nStep] = 1;
+				Q.push(nStep);
+				chk[nStep] = 1;
+		}
+		nStep = n-size; //up
+		if (chk[nStep] != 1 && 
+			(nStep) >= 0 && 
+			currentDungeon.mapDiscovered[nStep] && currentDungeon.map[nStep] == "Empty") {
+				currentDungeon.mapVisited[nStep] = 1;
+				Q.push(nStep);
+				chk[nStep] = 1;
+		}
+		nStep = n+size; //down
+		if (chk[nStep] != 1 && 
+			(nStep) < (size*size) && 
+			currentDungeon.mapDiscovered[nStep] && currentDungeon.map[nStep] == "Empty") {
+				currentDungeon.mapVisited[nStep] = 1;
+				Q.push(nStep);
+				chk[nStep] = 1;
+		}
+	}
+}
+
 var moveToRoom = function(id) {
     if (canMoveToRoom(id, currentDungeon.size)) {
         playerPosition = id;
         currentDungeon.mapDiscovered[id] = 1;
-        currentDungeon.mapVisited[id] = 1;
+		floodVisit(playerPosition);
         hideDungeonChest();
         if (currentDungeon.map[id] == "Pokemon") {
             spawnDungeonPokemon();
@@ -240,6 +261,8 @@ var revealEverything = function(){
     for(var i = 0; i<currentDungeon.map.length; i++){
         currentDungeon.mapDiscovered[i] = 1;
     }
+
+    floodVisit(playerPosition);
 }
 
 var spawnDungeonChest = function() {
