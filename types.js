@@ -286,7 +286,7 @@ var showShardModal = function(){
 		html += "</td><td class='shardColumn4'>";
 		if (player.notEffectiveTypeBonus[i] < 10){
 			var cost = 250*(player.notEffectiveTypeBonus[i]+1);
-			html += "<button class='tooltipShard' title='" + numberWithCommas(cost) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 1 +")'" + (cost>player.typeShards[i] ? "disabled" : "") + ">Upgrade</button>";
+			html += "<button class='tooltipShard' title='" + numberWithCommas(cost) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 1 +")'" + (cost>player.typeShards[i] ? " class='disabled'" : "") + ">Upgrade</button>";
 		} else {
 			html += "<button class='disabled'>Upgrade</button>";
 		}
@@ -307,7 +307,7 @@ var showShardModal = function(){
 		html += "</td><td class='shardColumn4'>";
 		if (player.normalEffectiveTypeBonus[i] < 10){
 			var cost = 250*(player.normalEffectiveTypeBonus[i]+1);
-			html += "<button class='tooltipShard' title='" + numberWithCommas(cost) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 2 +")'" + (cost>player.typeShards[i] ? "disabled" : "") + ">Upgrade</button>";
+			html += "<button class='tooltipShard' title='" + numberWithCommas(cost) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 2 +")'" + (cost>player.typeShards[i] ? " class='disabled'" : "") + ">Upgrade</button>";
 		} else {
 			html += "<button class='disabled'>Upgrade</button>";
 		}
@@ -328,7 +328,7 @@ var showShardModal = function(){
 		html += "</td><td class='shardColumn4'>";
 		if (player.veryEffectiveTypeBonus[i] < 10){
 			var cost = 250*(player.veryEffectiveTypeBonus[i]+1);
-			html += "<button class='tooltipShard' title='" + numberWithCommas(cost) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 3 +")'" + (cost>player.typeShards[i] ? "disabled" : "") + ">Upgrade</button>";
+			html += "<button class='tooltipShard' title='" + numberWithCommas(cost) + " " + numberToType[i] + " shards' onclick='buyUpgrade("+ i + "," + 3 +")'" + (cost>player.typeShards[i] ? " class='disabled'" : "") + ">Upgrade</button>";
 		} else {
 			html += "<button class='disabled'>Upgrade</button>";
 		}
