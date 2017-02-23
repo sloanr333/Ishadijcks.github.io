@@ -11,6 +11,7 @@ var Dungeon = function(name, pokemons, size, baseHealth, bossList, tokenCost, ba
         size: size,
         map: [],
         mapDiscovered: [],
+        mapVisited: [],
         baseHealth: baseHealth,
         pokemons: pokemons,
         bossList: bossList,
@@ -131,6 +132,7 @@ var loadDungeon = function(townId) {
         currentDungeon.map = createMap(currentDungeon.size);
         playerPosition = Math.floor(currentDungeon.size * currentDungeon.size / 2);
         currentDungeon.mapDiscovered[playerPosition] = 1;
+        currentDungeon.mapVisited[playerPosition] = 1;
         player.dungeonTokens -= currentDungeon.tokenCost;
         currentDungeon.loot = [];
         dungeonCanMove = 1;
@@ -185,10 +187,34 @@ var adjacent = function(pos, target, size) {
 
 }
 
+var canMoveToRoom = function(target, size) {
+    console.log(playerPosition + " " + target);
+    console.log(target % (size));
+    if (curEnemy.alive || !dungeonCanMove) {
+        return false;
+    }
+
+    //If any of the adjacent squares are visited, it's a valid room.
+    if (target < 0 || target > (size*size) - 1) {
+        return false;
+    }
+    if (currentDungeon.mapVisited[target+size] || currentDungeon.mapVisited[target-size]) {
+        return true;
+    }
+    //things get a bit tricky with the wrapped "x-values".
+    if (currentDungeon.mapVisited[target-1]) {
+        return !(target % (size) == 0)
+    }
+    if (currentDungeon.mapVisited[target+1]) {
+        return !(target % (size) == (size - 1))
+    }
+}
+
 var moveToRoom = function(id) {
-    if (adjacent(playerPosition, id, currentDungeon.size) && !curEnemy.alive && dungeonCanMove) {
+    if (canMoveToRoom(id, currentDungeon.size)) {
         playerPosition = id;
         currentDungeon.mapDiscovered[id] = 1;
+        currentDungeon.mapVisited[id] = 1;
         hideDungeonChest();
         if (currentDungeon.map[id] == "Pokemon") {
             spawnDungeonPokemon();
@@ -301,12 +327,12 @@ var updateDungeon = function() {
         } else {
 
             if(alreadyCaughtShiny(curEnemy.name)){
-                html += "<img id=alreadyCaughtImage src=images/shinyPokeball.PNG><br><img id=dungeonEnemy src='images/pokemon/"+curEnemy.id+".png' >"; 
+                html += "<img id=alreadyCaughtImage src=images/shinyPokeball.PNG><br><img id=dungeonEnemy src='images/pokemon/"+curEnemy.id+".png' >";
             } else if(alreadyCaught(curEnemy.name)){
-                html += "<img id=alreadyCaughtImage src=images/Pokeball.PNG><br><img id=dungeonEnemy src='images/pokemon/"+curEnemy.id+".png' >"; 
+                html += "<img id=alreadyCaughtImage src=images/Pokeball.PNG><br><img id=dungeonEnemy src='images/pokemon/"+curEnemy.id+".png' >";
             } else {
                 html += "<br><img id=dungeonEnemy src='images/pokemon/"+curEnemy.id+".png' >";
-            }           
+            }
         }
 
         html += "</div>";
@@ -379,7 +405,7 @@ var dungeonEnemyDefeated = function() {
     attackInterval = setInterval(pokemonsAttack,1000);
     canCatch = 1;
     if (curEnemy.alive) {
-        
+
         currentDungeon.map[playerPosition] = "Empty";
 
         var catchRate = curEnemy.catchRate + getBonusCatchrate();
@@ -463,6 +489,7 @@ var resetDungeon = function() {
         currentDungeon.timeLeft = currentDungeon.timeLimit;
         currentDungeon.pokemonDefeated = 0;
         currentDungeon.mapDiscovered = [];
+        currentDungeon.mapVisited = [];
         currentDungeon.chestsOpened = 0;
     }
 }
@@ -522,7 +549,7 @@ var spawnDungeonBoss = function() {
     if(possibleType != undefined){
         curEnemy.type = possibleType;
     } else {
-        curEnemy.type = ['normal'];        
+        curEnemy.type = ['normal'];
     }
 
     clearInterval(attackInterval);
@@ -551,7 +578,7 @@ var spawnDungeonPokemon = function() {
     if(possibleType != undefined){
         curEnemy.type = possibleType;
     } else {
-        curEnemy.type = ['normal'];        
+        curEnemy.type = ['normal'];
     }
     clearInterval(attackInterval);
     attackInterval = setInterval(pokemonsAttack, 1000);
